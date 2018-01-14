@@ -82,7 +82,7 @@ app.get('/',function(req,res){
 						console.log('else');
 					}
 				});
-			},5000);
+			},1800000);
 
 
 });
