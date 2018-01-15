@@ -1,6 +1,6 @@
 var request = require('request');
 var cheerio = require('cheerio');
-var resString = 'Revised Result(2K16/CEEE/124, 2K15/CECE/45) and semester Result(2K17/CEEE/54)';
+var resString = null;
 var nodemailer = require('nodemailer');
 var express  = require('express');
 var fs = require('fs');
@@ -44,6 +44,21 @@ app.get('/',function(req,res){
 		}
 	});
 		
+		
+	request('http://exam.dtu.ac.in/result.htm',function(err,response,html){
+					if(!err && response.statusCode == 200)
+					{
+						console.log('inside if');
+						var $ = cheerio.load(html);
+						$('#AutoNumber1').filter(function(){
+							var data = $(this);
+							var title = data.children().children().eq(2).children().next().children().text();
+							console.log(title);
+							resString = title;
+						});
+					}
+				});
+
 		setInterval(function(){
 		console.log('inside while ');
 				request('http://exam.dtu.ac.in/result.htm',function(err,response,html){
@@ -53,11 +68,12 @@ app.get('/',function(req,res){
 						var $ = cheerio.load(html);
 						$('#AutoNumber1').filter(function(){
 							var data = $(this);
-							var title = data.children().children().eq(2).children().next().children().text();
+							var title = data.children().children().eq(3).children().next().children().text();
 							console.log(title);
 							if(!title.includes(resString))
 							{
 								console.log("declared");
+								mailOptions.text = 'result of ' + title + 'declared';
 								transporter.sendMail(mailOptions,function(error,info){
 								if(error)
 								{
