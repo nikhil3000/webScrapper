@@ -68,7 +68,7 @@ app.get('/',function(req,res){
 						var $ = cheerio.load(html);
 						$('#AutoNumber1').filter(function(){
 							var data = $(this);
-							var title = data.children().children().eq(3).children().next().children().text();
+							var title = data.children().children().eq(2).children().next().children().text();
 							console.log(title);
 							if(!title.includes(resString))
 							{
