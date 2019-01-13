@@ -5,26 +5,16 @@ var nodemailer = require('nodemailer');
 var express  = require('express');
 var fs = require('fs');
 var app = express();
+require('dotenv').config();
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
-var transporter1 = nodemailer.createTransport({
-	service:'gmail',
-
-	auth:
-	{
-		user:'automated.nikhilyadav3000@gmail.com',
-		passs: 'nodemailerPassword'
-	}
-});
-
-var transporter = nodemailer.createTransport(
-'smtps://automated.nikhilyadav3000%40gmail.com:nodemailerPassword@smtp.gmail.com');
-
-var mailOptions ={
+var mailOptions = {
 	from: 'automated.nikhilyadav3000@gmail.com',
 	to: 'nikhilyadav3000@gmail.com',
-	subject : 'Sending email using nodejs',
-	text: 'Kisi ka result aa gaya'
+	subject: 'Result Notification'
 };
 
 
@@ -74,17 +64,17 @@ app.get('/',function(req,res){
 							{
 								console.log("declared");
 								mailOptions.text = 'result of ' + title + 'declared';
-								transporter.sendMail(mailOptions,function(error,info){
-								if(error)
-								{
-									console.log(error);
-								}
-								else
-								{
-									console.log('Email sent: '+ info.response);
-								}
+								sgMail.send(mailOptions, function (err, info) {
+									if (err) {
+										console.log(err.response.body);
+										return 'err';
+									}
+									else {
+										console.log(info.response);
+										return 'success';
+									}
 								});
-
+							
 							}
 							
 							else
